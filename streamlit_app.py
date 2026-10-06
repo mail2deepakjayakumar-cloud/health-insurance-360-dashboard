@@ -7,7 +7,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-session = get_active_session()
+conn = st.connection("snowflake")
 
 # --- Custom CSS for professional look ---
 st.markdown("""
