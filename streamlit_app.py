@@ -139,17 +139,12 @@ section[data-testid="stSidebar"] .stRadio label:hover {
 </style>""", unsafe_allow_html=True)
 
 # ── Connection & Helpers ────────────────────────────────────────────────────
-try:
-    conn = st.connection("snowflake", ttl=os.getenv("SNOWFLAKE_CONNECTION_TTL"))
-    session = conn.session()
-except AttributeError:
-    from snowflake.snowpark.context import get_active_session
-    session = get_active_session()
+conn = st.connection("snowflake")
 
 def ai_complete(prompt):
     escaped = prompt.replace("'", "\\'")
-    result = session.sql(f"SELECT SNOWFLAKE.CORTEX.COMPLETE('llama3.1-70b', '{escaped}') AS RESPONSE").collect()
-    return result[0]["RESPONSE"]
+    result = conn.query(f"SELECT SNOWFLAKE.CORTEX.COMPLETE('llama3.1-70b', '{escaped}') AS RESPONSE")
+    return result.iloc[0]["RESPONSE"]
 
 def status_color(s):
     s = str(s).upper()
@@ -167,27 +162,27 @@ def _agent_md_to_html(text):
 # ── Data Loaders ────────────────────────────────────────────────────────────
 @st.cache_data(ttl=300)
 def load_customers():
-    return session.sql("SELECT * FROM HEALTH_INSURANCE_360.PUBLIC.CUSTOMERS").to_pandas()
+    return conn.query("SELECT * FROM HEALTH_INSURANCE_360.PUBLIC.CUSTOMERS")
 
 @st.cache_data(ttl=300)
 def load_policies():
-    return session.sql("SELECT * FROM HEALTH_INSURANCE_360.PUBLIC.POLICIES").to_pandas()
+    return conn.query("SELECT * FROM HEALTH_INSURANCE_360.PUBLIC.POLICIES")
 
 @st.cache_data(ttl=300)
 def load_claims():
-    return session.sql("SELECT * FROM HEALTH_INSURANCE_360.PUBLIC.CLAIMS").to_pandas()
+    return conn.query("SELECT * FROM HEALTH_INSURANCE_360.PUBLIC.CLAIMS")
 
 @st.cache_data(ttl=300)
 def load_tickets():
-    return session.sql("SELECT * FROM HEALTH_INSURANCE_360.PUBLIC.SERVICE_TICKETS").to_pandas()
+    return conn.query("SELECT * FROM HEALTH_INSURANCE_360.PUBLIC.SERVICE_TICKETS")
 
 @st.cache_data(ttl=300)
 def load_agents():
-    return session.sql("SELECT * FROM HEALTH_INSURANCE_360.PUBLIC.AGENTS").to_pandas()
+    return conn.query("SELECT * FROM HEALTH_INSURANCE_360.PUBLIC.AGENTS")
 
 @st.cache_data(ttl=300)
 def load_conversations():
-    return session.sql("SELECT * FROM HEALTH_INSURANCE_360.PUBLIC.CUSTOMER_CONVERSATIONS").to_pandas()
+    return conn.query("SELECT * FROM HEALTH_INSURANCE_360.PUBLIC.CUSTOMER_CONVERSATIONS")
 
 customers = load_customers()
 policies = load_policies()
