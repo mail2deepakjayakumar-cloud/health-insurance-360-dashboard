@@ -705,7 +705,7 @@ def render_agent():
                 p = f"You are a health insurance customer service AI. Customer: {cr['NAME']}, CIBIL: {cr['CIBIL_SCORE']}, Tenure: {cr['TENURE_YEARS']}yr, Premium: ₹{cr['TOTAL_PREMIUM_PAID']:,.0f}, Churn: {churn:.2f}. Claims: {claims_ctx}. Policies: {policy_ctx}. Conversations: {convo_ctx}. Question: {user_query}. Answer in 2-4 sentences max with specific data points. No intro."
                 resp = ai_complete(p)
                 st.session_state["chat_messages"].append({"role": "assistant", "content": resp})
-                st.experimental_rerun()
+                st.rerun()
 
     with tab2:
         st.markdown('<div class="section-header"><strong>📄 Claim Analysis</strong></div>', unsafe_allow_html=True)
